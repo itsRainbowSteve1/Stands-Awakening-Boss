@@ -1,0 +1,88 @@
+repeat wait() until game:IsLoaded() and game:GetService("Players")
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+    v:Disable()
+end
+-- Important Variables
+local Players           =  game:GetService("Players")
+local LocalPlayer       =  Players.LocalPlayer
+local Character         =  LocalPlayer.Character
+local HumanoidRootPart  =  Character.HumanoidRootPart
+local Humanoid          =  Character.Humanoid
+-- Variables
+local Time       =  true
+local Attacking  =  game:GetService("Workspace").Dead
+local Obby       =  game:GetService("Workspace").ObbyW
+local Phase      =  game:GetService("Workspace").BossPhase
+local Health     =  game:GetService("Workspace").TrollHealth
+-- Clear
+if game:GetService("Workspace"):FindFirstChild("Effects") then
+    game:GetService("Workspace"):FindFirstChild("Effects"):Destroy()
+end
+if game:GetService("Workspace").Map:FindFirstChild("ThunderParts") then
+    game:GetService("Workspace").Map:FindFirstChild("ThunderParts"):Destroy()
+end
+-- Sword Size
+if LocalPlayer.Backpack:FindFirstChild("KnightsSword") then
+    LocalPlayer.Backpack["KnightsSword"].Parent = Character
+    if Character:FindFirstChild("KnightsSword") then
+        local Sword            =  Character:FindFirstChild("KnightsSword")
+        local Box              =  Instance.new("SelectionBox")
+        Box.Name               =  "SelectionBoxCreated"
+        Box.Parent             =  Sword.Handle
+        Box.Adornee            =  Sword.Handle
+        Sword.Handle.Massless  =  true
+        Sword.GripPos          =  Vector3.new(0,0,0)
+        Character:FindFirstChildOfClass("Humanoid"):UnequipTools()
+        LocalPlayer.Backpack["KnightsSword"].Parent = Character
+        Character.KnightsSword.Handle.Size = Vector3.new(20, 20, 500)
+    end
+elseif Character:FindFirstChild("KnightsSword") then
+    local Sword            =  Character:FindFirstChild("KnightsSword")
+    local Box              =  Instance.new("SelectionBox")
+    Box.Name               =  "SelectionBoxCreated"
+    Box.Parent             =  Sword.Handle
+    Box.Adornee            =  Sword.Handle
+    Sword.Handle.Massless  =  true
+    Sword.GripPos          =  Vector3.new(0,0,0)
+    Character:FindFirstChildOfClass("Humanoid"):UnequipTools()
+    LocalPlayer.Backpack["KnightsSword"].Parent = Character
+    Character.KnightsSword.Handle.Size = Vector3.new(20, 20, 500)
+end
+-- Teleport
+task.spawn(function()
+    while Attacking.Value == false do task.wait()
+        if Obby.Value == true then
+            HumanoidRootPart.CFrame = CFrame.new(20.4561386, 113.245972, 196.61351, 0.0634383112, 5.81675401e-08, -0.99798578, 8.29346689e-08, 1, 6.35567972e-08, 0.99798578, -8.67995524e-08, 0.0634383112)
+        else
+            if Phase.Value == "None" then
+                HumanoidRootPart.CFrame = CFrame.new(-5.46999931, -4.45343876, 248.209991, 1, 1.68923409e-09, 7.63995055e-14, -1.68923409e-09, 1, 6.64721389e-09, -7.63882772e-14, -6.64721389e-09, 1)
+            else
+                HumanoidRootPart.CFrame = CFrame.new(-19.8957844, -4.77343941, 142.49881, -0.999476075, -3.27794467e-08, -0.0323671587, -3.71140274e-08, 1, 1.33318295e-07, 0.0323671587, 1.34449706e-07, -0.999476075)
+            end
+        end
+    end
+end)
+-- Attack
+task.spawn(function()
+    while Attacking.Value == false  do task.wait()
+        if Obby.Value == false then
+            if Character:FindFirstChild("KnightsSword") then
+                Character.KnightsSword:Activate()
+            end
+        end
+    end
+end)
+-- Percent
+local function Percent(First, Second)
+    return(First / Second)
+end
+Health:GetPropertyChangedSignal("Value"):Connect(function()
+    if Percent(Health.Value, Health.MaxHealth.Value) <= 0.003 and Percent(Health.Value, Health.MaxHealth.Value) >= 0 then
+        if Time then
+            Time = false
+            Character:FindFirstChildOfClass("Humanoid"):UnequipTools()
+            wait(WaitTime)
+            LocalPlayer.Backpack["KnightsSword"].Parent = Character
+        end
+    end
+end)
